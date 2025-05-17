@@ -11,4 +11,3 @@ python-multipart
 numpy
 insightface
 scipy
-gdown
