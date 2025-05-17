@@ -12,7 +12,11 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
+RUN mkdir -p onnx_models && \
+    gdown --id 1SU8rLHaQvygJbq5BVdY4a5X_-HO_k3Ur -O onnx_models/glint360k_r100.onnx
+
 COPY . .
 
 EXPOSE 8000
+
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
