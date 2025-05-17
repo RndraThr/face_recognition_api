@@ -15,31 +15,6 @@ Sistem Face Recognition ini dibangun menggunakan **FastAPI**, **PostgreSQL**, da
 
 ---
 
-## Struktur Folder
-face_recognition_api/
-├── app/
-│ ├── api/
-│ │ └── face.py # Endpoint API utama
-│ ├── core/
-│ │ ├── config.py # Konfigurasi environment
-│ │ └── utils.py # Fungsi bantu (resize, base64, dll)
-│ ├── models/
-│ │ └── face_model.py # Model SQLAlchemy
-│ ├── schemas/
-│ │ └── face_schema.py # Schema untuk request & response
-│ ├── services/
-│ │ └── face_service.py # Logika deteksi & embedding wajah
-│ ├── main.py # Entry point FastAPI
-├── onnx_models/
-│ └── glint360k_r100.onnx # Akan otomatis terunduh saat build
-├── .env
-├── requirements.txt
-├── Dockerfile
-├── docker-compose.yaml
-
-
----
-
 ## Konfigurasi Environment
 
 Edit file `.env`:
@@ -51,14 +26,14 @@ THRESHOLD=0.4
 Cara Menjalankan:
 
 1. Clone repo
-    git clone https://github.com/RndraThr/face_recognition_api.git
-    cd face-recognition-api
+    `git clone https://github.com/RndraThr/face_recognition_api.git`
+    `cd face-recognition-api`
 
     Setelah masuk ke folder project selanjutnya jalankan docker.
 
 
 2. Jalankan Docker
-    docker-compose up --build
+    `docker-compose up --build`
     Model glint360k_r100.onnx akan otomatis diunduh dari Google Drive dan diletakkan ke folder onnx_models/.
 
     Setelah Build dan Upload Docker sudah berhasil dan server sudah berjalan, selanjutnya tinggal buka browser dan masuk ke dokumentasi Swagger.
@@ -71,6 +46,7 @@ Cara Menjalankan:
     Misalkan:
     Disini saya coba untuk mengupload Gambar wajah
     
+```
 Endpoint API
 [GET] /api/face
 Menampilkan semua data wajah yang tersimpan.
