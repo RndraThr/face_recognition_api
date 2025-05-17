@@ -65,6 +65,7 @@ onnx_models/glint360k_r100.onnx
 ```
 
 > Pastikan file berada di path yang tepat agar tidak error saat load.
+![alt text](image-6.png)
 
 ### 3. **Atur File `.env`**
 
