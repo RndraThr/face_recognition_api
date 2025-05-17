@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+python-dotenv
+pydantic
+pydantic-settings
+onnxruntime
+opencv-python
+python-multipart
+numpy
+insightface
+scipy
