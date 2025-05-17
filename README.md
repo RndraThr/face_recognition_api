@@ -88,7 +88,6 @@ Akses dokumentasi API: [http://localhost:8000/docs](http://localhost:8000/docs)
 ### 1. **\[GET] /api/face**
 
 Mengambil semua data wajah di database.
-![alt text](image.png)
 **Response**:
 
 ```json
@@ -101,14 +100,12 @@ Mengambil semua data wajah di database.
   }
 ]
 ```
-
+![alt text](image.png)
 ---
 
 ### 2. **\[POST] /api/face/register**
 
 Mendaftarkan wajah baru ke database.
-![alt text](image-1.png)
-![alt text](image-2.png)
 **Form-Data Input**:
 
 * `name`: Nama orang
@@ -125,12 +122,13 @@ Mendaftarkan wajah baru ke database.
 
 **Error**: Wajah tidak terdeteksi → 400 Bad Request
 
+![alt text](image-1.png)
+![alt text](image-2.png)
 ---
 
 ### 3. **\[POST] /api/face/recognize**
 
 Mengenali wajah dari gambar dengan membandingkan ke semua embedding.
-![alt text](image-3.png)
 **Input**: `file` (gambar wajah)
 
 **Response jika cocok**:
@@ -147,9 +145,9 @@ Mengenali wajah dari gambar dengan membandingkan ke semua embedding.
   }
 }
 ```
+![alt text](image-3.png)
 
 **Response jika tidak cocok**:
-![alt text](image-4.png)
 ```json
 {
   "matched": false,
@@ -157,13 +155,12 @@ Mengenali wajah dari gambar dengan membandingkan ke semua embedding.
   "matched_face": null
 }
 ```
-
+![alt text](image-4.png)
 ---
 
 ### 4. **\[DELETE] /api/face/{id}**
 
 Menghapus wajah berdasarkan ID.
-![alt text](image-5.png)
 **Response jika berhasil**:
 
 ```json
@@ -179,7 +176,7 @@ Menghapus wajah berdasarkan ID.
   "detail": "Wajah nggak ditemukan"
 }
 ```
-
+![alt text](image-5.png)
 ---
 
 ## 🧠 Catatan Teknis
@@ -203,29 +200,3 @@ $ docker-compose up -d
 # Hentikan semua container
 $ docker-compose down
 ```
-
----
-
-## ✅ Status
-
-✅ Semua fitur sesuai permintaan:
-
-* [x] Deteksi wajah
-* [x] Ekstraksi embedding
-* [x] Pencocokan dengan database
-* [x] Tambah & hapus wajah
-* [x] REST API (GET/POST/DELETE)
-* [x] Dockerize lengkap
-
-## 📄 Lisensi
-
-MIT License
-
----
-
-## 📬 Kontak
-
-Jika ada pertanyaan:
-
-* 📧 Email: [rendra@example.com](mailto:rendra@example.com)
-* 🧑 GitHub: [github.com/rendra](https://github.com/rendra)
