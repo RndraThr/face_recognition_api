@@ -4,88 +4,228 @@ Sistem Face Recognition ini dibangun menggunakan **FastAPI**, **PostgreSQL**, da
 
 ---
 
-## Teknologi yang Digunakan
-- **Python 3.10**
-- **FastAPI**
-- **SQLAlchemy**
-- **PostgreSQL (via Docker)**
-- **InsightFace (buffalo_l)**
-- **ONNX Runtime**
-- **Docker + Docker Compose**
+## 🛠 Teknologi yang Digunakan
+
+* **Python 3.10**
+* **FastAPI**
+* **SQLAlchemy**
+* **PostgreSQL (via Docker)**
+* **InsightFace (buffalo\_l)**
+* **ONNX Runtime**
+* **Docker + Docker Compose**
 
 ---
 
-## Struktur Folder
+## 📦 Struktur Folder
+
+```
 face_recognition_api/
 ├── app/
-│ ├── api/
-│ │ └── face.py # Endpoint API utama
-│ ├── core/
-│ │ ├── config.py # Konfigurasi environment
-│ │ └── utils.py # Fungsi bantu (resize, base64, dll)
-│ ├── models/
-│ │ └── face_model.py # Model SQLAlchemy
-│ ├── schemas/
-│ │ └── face_schema.py # Schema untuk request & response
-│ ├── services/
-│ │ └── face_service.py # Logika deteksi & embedding wajah
-│ ├── main.py # Entry point FastAPI
-├── onnx_models/
-│ └── glint360k_r100.onnx # Akan otomatis terunduh saat build
-├── .env
-├── requirements.txt
-├── Dockerfile
-├── docker-compose.yaml
-
+│   ├── api/
+│   │   └── face.py               # Endpoint API utama
+│   ├── core/
+│   │   ├── config.py             # Konfigurasi & utilitas
+│   │   └── utils.py              # Fungsi tambahan (resize gambar, base64, dll)
+│   ├── models/
+│   │   └── face_model.py         # Model SQLAlchemy untuk table faces
+│   ├── schemas/
+│   │   └── face_schema.py        # Schema Pydantic untuk request & response
+│   ├── services/
+│   │   └── face_service.py       # Logic untuk deteksi & embedding wajah
+│   ├── main.py                   # Entry point FastAPI
+│
+├── onnx_models/                 # Folder model ONNX (kosong, isi manual)
+│   └── glint360k_r100.onnx       
+├── .env                          # Konfigurasi environment
+├── requirements.txt             # Semua dependencies
+├── Dockerfile                   # Instruksi build image API
+├── docker-compose.yaml          # Menjalankan API + DB sekaligus
+```
 
 ---
 
-## Konfigurasi Environment
+## 🚀 Cara Menjalankan
 
-Edit file `.env`:
+### 1. **Clone Repositori**
+
+```bash
+https://github.com/RndraThr/face_recognition_api.git
+cd face-recognition-api
+```
+
+### 2. **Siapkan Model ONNX**
+
+Karena GitHub tidak mendukung file besar (>100MB), file model tidak disertakan. Silakan:
+
+* Download manual model dari [Google Drive (glint360k\_r100.onnx)](https://drive.google.com/file/d/1SU8rLHaQvygJbq5BVdY4a5X_-HO_k3Ur/view?usp=sharing)
+* Simpan ke folder:
+
+```bash
+onnx_models/glint360k_r100.onnx
+```
+
+> Pastikan file berada di path yang tepat agar tidak error saat load.
+
+### 3. **Atur File `.env`**
+
 ```env
 DATABASE_URL=postgresql://postgres:admin@db:5432/facerecognition
 THRESHOLD=0.4
+```
 
+### 4. **Build & Jalankan Docker**
 
-Cara Menjalankan:
+```bash
+docker-compose up --build
+```
 
-1. Clone repo
-    git clone https://github.com/RndraThr/face_recognition_api.git
-    cd face-recognition-api
+Akses dokumentasi API: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-    Setelah masuk ke folder project selanjutnya jalankan docker.
+---
 
+## 📌 Endpoint API
 
-2. Jalankan Docker
-    docker-compose up --build
-    Model glint360k_r100.onnx akan otomatis diunduh dari Google Drive dan diletakkan ke folder onnx_models/.
+### 1. **\[GET] /api/face**
 
-    Setelah Build dan Upload Docker sudah berhasil dan server sudah berjalan, selanjutnya tinggal buka browser dan masuk ke dokumentasi Swagger.
+Mengambil semua data wajah di database.
+![alt text](image.png)
+**Response**:
 
-    Buka browser ke:
-    http://localhost:8000/docs
+```json
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "embedding": [...],
+    "created_at": "2025-05-17T08:00:00"
+  }
+]
+```
 
-    Nah setelah sudah masuk, bisa TryOut semua APInya.
+---
 
-    Misalkan:
-    Disini saya coba untuk mengupload Gambar wajah
-    
-Endpoint API
-[GET] /api/face
-Menampilkan semua data wajah yang tersimpan.
-________________________________________
-[POST] /api/face/register
-Mendaftarkan wajah baru.
-Form-Data:
-•	name: nama
-•	file: file gambar
-________________________________________
-[POST] /api/face/recognize
-Cocokkan wajah dari gambar terhadap database.
-Form-Data:
-•	file: file gambar
-________________________________________
-[DELETE] /api/face/{id}
-Hapus wajah berdasarkan ID.
+### 2. **\[POST] /api/face/register**
 
+Mendaftarkan wajah baru ke database.
+![alt text](image-1.png)
+![alt text](image-2.png)
+**Form-Data Input**:
+
+* `name`: Nama orang
+* `file`: Gambar wajah
+
+**Response**:
+
+```json
+{
+  "message": "Wajah berhasil ditambahin",
+  "id": 2
+}
+```
+
+**Error**: Wajah tidak terdeteksi → 400 Bad Request
+
+---
+
+### 3. **\[POST] /api/face/recognize**
+
+Mengenali wajah dari gambar dengan membandingkan ke semua embedding.
+![alt text](image-3.png)
+**Input**: `file` (gambar wajah)
+
+**Response jika cocok**:
+
+```json
+{
+  "matched": true,
+  "similarity": 0.87,
+  "matched_face": {
+    "id": 2,
+    "name": "John Doe",
+    "embedding": [...],
+    "created_at": "2025-05-17T08:00:00"
+  }
+}
+```
+
+**Response jika tidak cocok**:
+![alt text](image-4.png)
+```json
+{
+  "matched": false,
+  "similarity": 0.15,
+  "matched_face": null
+}
+```
+
+---
+
+### 4. **\[DELETE] /api/face/{id}**
+
+Menghapus wajah berdasarkan ID.
+![alt text](image-5.png)
+**Response jika berhasil**:
+
+```json
+{
+  "message": "Wajah dengan ID 2 berhasil dihapus"
+}
+```
+
+**Jika ID tidak ditemukan**:
+
+```json
+{
+  "detail": "Wajah nggak ditemukan"
+}
+```
+
+---
+
+## 🧠 Catatan Teknis
+
+* **Face Detection**: InsightFace (`buffalo_l`) + fallback HaarCascade
+* **Embedding**: model `glint360k_r100.onnx` via ONNX Runtime
+* **Similarity Threshold**: dapat dikonfigurasi via `.env` (`THRESHOLD=0.4`)
+* **Database**: tersimpan di volume Docker (`postgres_data`)
+
+---
+
+## 🐳 Docker Commands
+
+```bash
+# Jalankan dan build ulang
+$ docker-compose up --build
+
+# Jalankan di background
+$ docker-compose up -d
+
+# Hentikan semua container
+$ docker-compose down
+```
+
+---
+
+## ✅ Status
+
+✅ Semua fitur sesuai permintaan:
+
+* [x] Deteksi wajah
+* [x] Ekstraksi embedding
+* [x] Pencocokan dengan database
+* [x] Tambah & hapus wajah
+* [x] REST API (GET/POST/DELETE)
+* [x] Dockerize lengkap
+
+## 📄 Lisensi
+
+MIT License
+
+---
+
+## 📬 Kontak
+
+Jika ada pertanyaan:
+
+* 📧 Email: [rendra@example.com](mailto:rendra@example.com)
+* 🧑 GitHub: [github.com/rendra](https://github.com/rendra)
